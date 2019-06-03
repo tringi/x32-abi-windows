@@ -16,7 +16,7 @@ The results are very interesting, yet not entirely surprising, at least to me as
 
 ### x86-64 Ryzen 1800X 3.6 GHz, DDR4 @ 3333 MHz dual channel
 
-High performace power scheme. The table contains best result of ouf 6 (or so) runs.
+High performace power scheme. The table contains best result out of 6 (or so) runs.
 
 |  | x86-64 | x86-32 (WoW) | x86-X32 |
 | --- | ---: | ---: | ---: |
