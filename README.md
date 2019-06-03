@@ -49,3 +49,8 @@ A pointer-heavy code could be 6% faster (or more, or less) if built as 64-bit wi
 * **No X32 *ABI* for ARM-64.** ARM Windows loader won't load native ARM64 binaries that have LARGE ADDRESS AWARE flag cleared (or ADDRESS SPACE RANDOMIZATION disabled for that matter). And the x86 to AArch64 translator can process only 32-bit code (for now I'm told).
 * The program uses **std::rand** to produce the same random tree on all platforms.
 * For the purposes of this X32 *ABI* it would be nice if the Windows supported restricting to 4 GB address space for 64-bit programs. It's the case of 32-bit executables that have the IMAGE_FILE_LARGE_ADDRESS_AWARE flag set.
+
+## Generated binary analysis
+
+The differences in generated instructions seem marginal. On **short_ptr** side there are less REX prefixes, but more conversion and move instructions. It seems like the optimizer doesn't see perfectly through what I'm trying to acomplish, but I've found no obvious pesimisations either. Although it won't use SSE to zero out the array of the *short* pointers.
+
