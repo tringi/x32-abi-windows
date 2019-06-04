@@ -150,7 +150,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;msvcrt.lib;comdlg32.lib;advapi32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;msvcrtd.lib;comdlg32.lib;advapi32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LargeAddressAware>false</LargeAddressAware>
     </Link>
   </ItemDefinitionGroup>
@@ -172,7 +172,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;msvcrt.lib;comdlg32.lib;advapi32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;msvcrtd.lib;comdlg32.lib;advapi32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LargeAddressAware>false</LargeAddressAware>
     </Link>
   </ItemDefinitionGroup>
@@ -194,7 +194,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;msvcrt.lib;comdlg32.lib;advapi32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;msvcrtd.lib;comdlg32.lib;advapi32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LargeAddressAware>false</LargeAddressAware>
     </Link>
   </ItemDefinitionGroup>
@@ -238,7 +238,7 @@
       </MergeSections>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <MinimumRequiredVersion>5.1</MinimumRequiredVersion>
-      <LargeAddressAware>true</LargeAddressAware>
+      <LargeAddressAware>false</LargeAddressAware>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -285,7 +285,7 @@
       </MergeSections>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <MinimumRequiredVersion>5.2</MinimumRequiredVersion>
-      <LargeAddressAware>true</LargeAddressAware>
+      <LargeAddressAware>false</LargeAddressAware>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -329,7 +329,7 @@
       <MergeSections>
       </MergeSections>
       <MinimumRequiredVersion>6.2</MinimumRequiredVersion>
-      <LargeAddressAware>true</LargeAddressAware>
+      <LargeAddressAware>false</LargeAddressAware>
     </Link>
     <PreBuildEvent>
       <Command>

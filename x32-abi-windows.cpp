@@ -2,9 +2,9 @@
 #include <PSApi.h>
 
 #include <cstdint>
-#include <cstdlib>
 #include <cstdio>
 #include <stdexcept>
+#include <random>
 
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 
@@ -61,13 +61,16 @@ const char * platform () {
     return "error";
 }
 
+std::mt19937                         random_generator;
+std::uniform_int_distribution <long> random_distribution;
+
 template <typename T>
 struct short_ptr {
     long pointer;
 
 public:
     short_ptr () noexcept
-        : pointer (0) {} // ??
+        : pointer (0) {};
     short_ptr (T * native) noexcept
         : pointer (long (reinterpret_cast <std::intptr_t> (native))) {}
     short_ptr (short_ptr && other) noexcept
@@ -77,7 +80,6 @@ public:
 
     short_ptr & operator = (short_ptr && other) noexcept {
         this->pointer = other.pointer;
-        other.pointer = 0; // ??
         return *this;
     }
     short_ptr & operator = (const short_ptr & other) noexcept {
@@ -105,14 +107,14 @@ struct short_ptr_node {
     typedef short_ptr <short_ptr_node> ptr_type;
 
     ptr_type pointers [N] = {};
-    long data = std::rand ();
+    long data = random_distribution (random_generator);
 };
 
 struct naked_ptr_node {
     typedef naked_ptr_node * ptr_type;
 
     ptr_type pointers [N] = {};
-    long data = std::rand ();
+    long data = random_distribution (random_generator);
 };
 
 template <typename T>
@@ -131,7 +133,7 @@ template <typename T>
 void build (T * parent, std::size_t depth) {
 
     for (auto & p : parent->pointers) {
-        if (std::rand () % 8) { // leave some NULL
+        if (random_distribution (random_generator) % 8) { // leave some NULL
             p = new T;
             ++allocated;
         }
@@ -238,7 +240,7 @@ int main () {
     // platform info
 
     auto header = reinterpret_cast <const IMAGE_NT_HEADERS *> (reinterpret_cast <const char *> (&__ImageBase) + __ImageBase.e_lfanew);
-    bool laa = header->OptionalHeader.DllCharacteristics & IMAGE_FILE_LARGE_ADDRESS_AWARE;
+    bool laa = header->FileHeader.Characteristics & IMAGE_FILE_LARGE_ADDRESS_AWARE;
 
     std::printf ("X32-ABI on WINDOWS test; " ARCHITECTURE " on %s, large addresses %s\n\n", platform (), laa ? "enabled" : "DISABLED");
 
