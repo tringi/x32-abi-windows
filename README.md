@@ -48,7 +48,6 @@ A pointer-heavy code can be 6 % faster if built as 64-bit with 32-bit pointers, 
 ## Random notes
 
 * **No X32 *ABI* for ARM-64.** ARM Windows loader won't load native ARM64 binaries that have LARGE ADDRESS AWARE flag cleared (or ADDRESS SPACE RANDOMIZATION disabled for that matter). And the x86 to AArch64 translator can process only 32-bit code (for now I'm told).
-* The program uses **std::rand** to produce the same random tree on all platforms.
 * For the purposes of this X32 *ABI* it would be nice if the Windows supported restricting to 4 GB address space for 64-bit programs. It's the case of 32-bit executables that have the IMAGE_FILE_LARGE_ADDRESS_AWARE flag set.
 
 ## Generated binary analysis
