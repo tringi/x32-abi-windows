@@ -102,28 +102,45 @@ public:
     }
 };
 
-static constexpr auto N = 6u;
-
 struct short_ptr_node {
     typedef short_ptr <short_ptr_node> ptr_type;
 
-    ptr_type pointers [N] = {};
+    ptr_type a = nullptr;
+    char cache_line_breaker_a [64 - sizeof (ptr_type)];
+    ptr_type b = nullptr;
+    char cache_line_breaker_b [64 - sizeof (ptr_type)];
+    ptr_type c = nullptr;
+
     long data = random_distribution (random_generator);
 };
 
 struct naked_ptr_node {
     typedef naked_ptr_node * ptr_type;
 
-    ptr_type pointers [N] = {};
+    ptr_type a = nullptr;
+    char cache_line_breaker_a [64 - sizeof (ptr_type)];
+    ptr_type b = nullptr;
+    char cache_line_breaker_b [64 - sizeof (ptr_type)];
+    ptr_type c = nullptr;
+
     long data = random_distribution (random_generator);
 };
 
 template <typename T>
+T * pick (T * p, long i) {
+    switch (i % 3) {
+        case 0: return p->a;
+        case 1: return p->b;
+        case 2: return p->c;
+    }
+    return nullptr;
+}
+
+template <typename T>
 T * walk (T * p, long x = 0) {
-    
-    while (auto next = p->pointers [(p->data ^ x) % N]) {
+    while (auto next = pick (p, p->data ^ x)) {
         p = next;
-        x >>= 3; // keep roughly number of bits of N
+        x /= 3;
     }
     return p;
 }
@@ -131,30 +148,36 @@ T * walk (T * p, long x = 0) {
 std::size_t allocated = 0;
 
 template <typename T>
+T * make (std::vector <T *> & pregenerated) {
+    if (random_distribution (random_generator) % 8) { // leave some NULL
+
+        if (pregenerated.empty ()) {
+            pregenerated.resize (1024 * 1024);
+            for (auto & pg : pregenerated) {
+                pg = new T;
+            }
+            std::shuffle (pregenerated.begin (), pregenerated.end (), random_generator);
+        }
+
+        auto p = pregenerated.back ();
+        pregenerated.pop_back ();
+        ++allocated;
+        return p;
+    } else
+        return nullptr;
+}
+
+template <typename T>
 void build (T * parent, std::size_t depth, std::vector <T *> & pregenerated) {
 
-    for (auto & p : parent->pointers) {
-        if (random_distribution (random_generator) % 8) { // leave some NULL
+    parent->a = make (pregenerated);
+    parent->b = make (pregenerated);
+    parent->c = make (pregenerated);
 
-            if (pregenerated.empty ()) {
-                pregenerated.resize (1024*1024);
-                for (auto & pg : pregenerated) {
-                    pg = new T;
-                }
-                std::shuffle (pregenerated.begin (), pregenerated.end (), random_generator);
-            }
-            
-            p = pregenerated.back ();
-            pregenerated.pop_back ();
-            ++allocated;
-        }
-    }
     if (depth--) {
-        for (auto & p : parent->pointers) {
-            if (p) {
-                build (( T *) p, depth, pregenerated);
-            }
-        }
+        if (parent->a) build (( T *) parent->a, depth, pregenerated);
+        if (parent->b) build (( T *) parent->b, depth, pregenerated);
+        if (parent->c) build (( T *) parent->c, depth, pregenerated);
     }
 }
 
@@ -201,8 +224,8 @@ void log (const char * format, ...) {
 
 template <typename T>
 void test () {
-    static constexpr auto DEPTH = 9u;
-    static constexpr auto WALKS = 1024*65536u;
+    static constexpr auto DEPTH = 15u;
+    static constexpr auto WALKS = 256*65536u;
 
     T root;
     try {
