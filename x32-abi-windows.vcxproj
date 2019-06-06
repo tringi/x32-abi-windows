@@ -238,7 +238,7 @@
       </MergeSections>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <MinimumRequiredVersion>5.1</MinimumRequiredVersion>
-      <LargeAddressAware>false</LargeAddressAware>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -285,7 +285,7 @@
       </MergeSections>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <MinimumRequiredVersion>5.2</MinimumRequiredVersion>
-      <LargeAddressAware>false</LargeAddressAware>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -329,7 +329,7 @@
       <MergeSections>
       </MergeSections>
       <MinimumRequiredVersion>6.2</MinimumRequiredVersion>
-      <LargeAddressAware>false</LargeAddressAware>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <PreBuildEvent>
       <Command>

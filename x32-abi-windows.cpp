@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <stdexcept>
 #include <random>
+#include <vector>
 
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 
@@ -130,18 +131,28 @@ T * walk (T * p, long x = 0) {
 std::size_t allocated = 0;
 
 template <typename T>
-void build (T * parent, std::size_t depth) {
+void build (T * parent, std::size_t depth, std::vector <T *> & pregenerated) {
 
     for (auto & p : parent->pointers) {
         if (random_distribution (random_generator) % 8) { // leave some NULL
-            p = new T;
+
+            if (pregenerated.empty ()) {
+                pregenerated.resize (1024*1024);
+                for (auto & pg : pregenerated) {
+                    pg = new T;
+                }
+                std::shuffle (pregenerated.begin (), pregenerated.end (), random_generator);
+            }
+            
+            p = pregenerated.back ();
+            pregenerated.pop_back ();
             ++allocated;
         }
     }
     if (depth--) {
         for (auto & p : parent->pointers) {
             if (p) {
-                build (( T *) p, depth);
+                build (( T *) p, depth, pregenerated);
             }
         }
     }
@@ -195,7 +206,9 @@ void test () {
 
     T root;
     try {
-        build (&root, DEPTH);
+        std::vector <T *> pregenerated;
+
+        build (&root, DEPTH, pregenerated);
         log ("built tree of %zu nodes in %u levels", allocated, DEPTH);
 
         PROCESS_MEMORY_COUNTERS memory;

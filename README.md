@@ -1,4 +1,4 @@
-﻿# x32-abi-windows
+﻿# x32-abi-windows / x86-64X32
 
 **Not actually ABI in any regular sense.** In this crude test I'm using this title only to convey that the purpose of this code is similar of the X32 ABI on Linux, which is: running 64-bit code with 32-bit pointers, for performance and footprint reasons.
 
@@ -6,7 +6,14 @@
 
 The program checks if its executable was built with **IMAGE_FILE_LARGE_ADDRESS_AWARE** flag. **Iff** the executable is **64-bit** and the flag was intentionally **cleared** (restricting the address space of the process to lowest 2 GBs (lower 31 bits)), then runs the test with **long** type (even on 64-bit Windows **long** type is 32-bit) acting as storage for the pointer (I call it **short_ptr**). Otherwise it runs the same test with native pointer size.
 
-In [/results/6-9-64M](https://github.com/tringi/x32-abi-windows/tree/master/results/6-9-64M) you'll find prebuilt test programs, where every node of the tree carries 6 pointers to next nodes (some left intentionally NULL). A tree of 9 levels is generated, totaling 19754205 nodes, and then walked through 67108864 times.
+In [/results/6-9-64M](https://github.com/tringi/x32-abi-windows/tree/master/results/6-9-64M) you'll find prebuilt test programs, where every node of the tree carries 6 pointers to next nodes (some left intentionally NULL). A tree of 9 levels is generated and then walked through 67108864 times.
+
+## Changes since first release
+
+* replaced **std::rand** with **std::mt19937** and **std::uniform_int_distribution** to get better random distribution
+* nodes are preallocated and random-shuffled before inserted into tree to break potential allocation locality; this has caused the results to change, for worse, in all cases, but the least for x86-64X32
+
+** I'm still working on other ways to make the test conclusive **
 
 ## Results (6-9-64M)
 
@@ -20,24 +27,14 @@ High performance power scheme. The table contains best result out of 6, or so, r
 
 |  | x86-64 | x86-32 (WoW) | x86-64X32 |
 | --- | ---: | ---: | ---: |
-| Memory use | 1253.6 MB | 783.9 MB | 968.7 MB |
-| Tree size | 1055.0 MB | 527.5 MB | 527.5 MB |
-| Build time | 2.01 s | 2.05 s | **2.28 s** |
-| **Walk time** | **7.21 s** | **6.93 s** | **6.50 s** |
-
-### AArch64 Snapdragon 835 2.2 GHz, LPDDR4 @ 1866 MHz on board
-*This is really for reference only, see notes.*
-
-|  | AArch-64 | x86-32 (WoW) |
-| --- | ---: | ---: |
-| Memory use | 1226.2 MB | 787.9 MB |
-| Tree size | 1055.0 MB | 527.5 MB |
-| Build time | 8.81 s | 6.91 s |
-| **Walk time** | 16.47 s | 20.33 s |
+| Memory use | 1471.9 MB | 919.4 MB | 1139.0 MB |
+| Tree size | 1201.2 MB | 600.6 MB | 600.6 MB |
+| Build time | 2.81 s | 2.79 s | **2.87 s** |
+| **Walk time** | **11.61 s** | **10.94 s** | **10.13 s** |
 
 ## TL;DR
 
-A pointer-heavy code can be 6 % faster if built as 64-bit with 32-bit pointers, instead just simply 32-bit, but it still will take more memory if special care of allocations isn't taken.
+A pointer-heavy code **can** be 9 % faster if built as 64-bit with 32-bit pointers, instead just simply 32-bit, but it still will take more memory if special care of allocations isn't taken.
 
 ## Possible improvements
 
