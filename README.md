@@ -13,7 +13,7 @@ In [/results/6-9-64M](https://github.com/tringi/x32-abi-windows/tree/master/resu
 ## Changes since first release
 
 * replaced **std::rand** with **std::mt19937** and **std::uniform_int_distribution** to get better random distribution
-* nodes are preallocated and random-shuffled before inserted into tree to break potential allocation locality; this has caused the results to change, for worse, in all cases, but the least for x86-64X32
+* nodes are preallocated and random-shuffled before being inserted into tree to break potential allocation locality; this has caused the results to change, for worse, in all cases, but interestingly the least for x86-64X32
 * added some additional breaks between pointers to simulate real-world data; the results now show only 3% improvement which is nearing the margin of error
 
 *I'm still working on other ways to make the test conclusive*
@@ -50,6 +50,8 @@ High performance power scheme. The tables contain best result out of 6, or so, r
 ## TL;DR
 
 A pointer-heavy code **can** be 9 % faster if built as 64-bit with 32-bit pointers, instead just simply 32-bit, and if the memory layout allows for better cache utilization and locality due to shorter pointers. The *64X32* program will still use more memory unless special care of allocations isn't taken.
+
+If the data structure doesn't lend itself to improved cache utilization there are little to no gains.
 
 ## Possible improvements
 
