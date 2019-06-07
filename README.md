@@ -53,6 +53,8 @@ A pointer-heavy code **can** be 9 % faster if built as 64-bit with 32-bit pointe
 
 If the data structure doesn't lend itself to improved cache utilization there are little to no gains.
 
+The rule of thumb seems to be: *If the performance of your code is better when compiled as 32-bit than 64-bit, then **64X32** mode can improve it further, otherwise not so much.*
+
 ## Possible improvements
 
 * Using custom allocator could bring the memory requirements of X32 down to x86-32 ballpark.
