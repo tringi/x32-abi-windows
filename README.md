@@ -62,7 +62,7 @@ High performance power scheme. The tables contain best result out of 6 or more r
 
 * Using custom allocator could bring the memory requirements of X32 down to x86-32 ballpark.
 * It would be interesting to see function call dispatch through 32-bit pointers in 64-bit code.
-* This test only narrows the pointers you dereference explicitly. For anything further, it would require compiler support, e.g. to support short-ptr virtual tables.
+* This test only narrows the pointers you dereference explicitly. For anything further, it would require compiler support, e.g. to support short-ptr virtual tables. For this to happen in MSVC upvote my [Feature Suggestion](https://developercommunity.visualstudio.com/idea/597247/transparent-support-for-32-bit-pointers-in-64-bit.html) :)
 
 ## Random notes
 
