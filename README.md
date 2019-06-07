@@ -6,7 +6,7 @@ Let's call it **x86-64X32**
 
 ## TL;DR
 
-A pointer-heavy code **can** be 9 % faster if built as 64-bit with 32-bit pointers, instead just simply 32-bit, and if the memory layout allows for better cache utilization and locality due to shorter pointers. The *64X32* program will still use more memory unless special care of allocations isn't taken.
+A pointer-heavy code **can** be 9 % faster if built as 64-bit with 32-bit pointers (instead just 32-bit), and if the memory layout allows for better cache utilization and locality due to shorter pointers. The **64X32** program will still use more memory unless special care of allocations isn't taken.
 
 If the data structure doesn't lend itself to improved cache utilization there are little to no gains.
 
@@ -14,26 +14,29 @@ The rule of thumb seems to be: *If the performance of your code is better when c
 
 ## Test program
 
-The program checks if its executable was built with **IMAGE_FILE_LARGE_ADDRESS_AWARE** flag. **Iff** the executable is **64-bit** and the flag was intentionally **cleared** (restricting the address space of the process to lowest 2 GBs (lower 31 bits)), then runs the test with **long** type (even on 64-bit Windows **long** type is 32-bit) acting as storage for the pointer (I call it **short_ptr**). Otherwise it runs the same test with native pointer size.
+The program checks if its executable was built with **IMAGE_FILE_LARGE_ADDRESS_AWARE** flag. **Iff** the executable is **64-bit** and the flag was intentionally **cleared** (restricting the address space of the process to lowest 2 GBs (lower 31 bits)), then runs the test with **long** (on 64-bit Windows **long** type is still 32-bit) as a storage type for the pointers (I call it **short_ptr**). Otherwise it runs the same test with native pointer size.
 
-In [/results/6-9-64M](https://github.com/tringi/x32-abi-windows/tree/master/results/6-9-64M) you'll find prebuilt test programs, where every node of the tree carries 6 pointers to next nodes (some left intentionally NULL). A tree of 9 levels is generated and then walked through 67108864 times.
+The test consists of building a random tree and randomly walking through it. Obviously this is a synthetic test and the results will vary wildly when used with real-world code.
+
+In [/results](https://github.com/tringi/x32-abi-windows/tree/master/results) you'll find prebuilt test programs.
+
+* 6-9-64M ([x32-abi-windows-tight.cpp](https://github.com/tringi/x32-abi-windows/blob/master/x32-abi-windows-tight.cpp)) test builds a tree where every node has 6 pointers to next nodes (some left intentionally NULL). A tree of 9 levels is generated and then walked through 67108864 times.
+* 3-15-16M ([x32-abi-windows.cpp](https://github.com/tringi/x32-abi-windows/blob/master/x32-abi-windows.cpp)) test builds a tree where every node has 3 pointers, some intentionally NULL, spaced by cache line-sized padding to break sharing. A tree of 15 levels is generated and then walked through 16777216 times.
 
 ## Changes since first release
 
 * replaced **std::rand** with **std::mt19937** and **std::uniform_int_distribution** to get better random distribution
 * nodes are preallocated and random-shuffled before being inserted into tree to break potential allocation locality; this has caused the results to change, for worse, in all cases, but interestingly the least for x86-64X32
-* added some additional breaks between pointers to simulate real-world data; the results now show only 3% improvement which is nearing the margin of error
+* added test with additional cache line-sized padding between pointers to simulate some real-world data, to break sharing; these results show only 3% improvement which is nearing the margin of error
 
-*I'm still working on other ways to make the test conclusive*
+*I'm still working on other ways to make the test more conclusive*
 
 ## Test results
 **x86-64 Ryzen 1800X 3.6 GHz, DDR4 @ 3333 MHz dual channel**
 
-Note that this is a synthetic test. The results of this technique will vary wildly when used with real-world code. Also the methods of measurement are very rough and the whole thing might be flawed in more than one way, but anyway...
+The results are very interesting, yet not entirely surprising if you've already read on this topic, i.e. why people around Linux found it worth experimenting with. I very much invite you to run the tests yourself.
 
-The results are very interesting, yet not entirely surprising, at least not to me as I've already read quite a lot on this topic. I very much invite you to run them yourself.
-
-High performance power scheme. The tables contain best result out of 6, or so, runs.
+High performance power scheme. The tables contain best result out of 6 or more runs.
 
 ### 6-9-64M
 **pointers tightly packed** [x32-abi-windows-tight.cpp](https://github.com/tringi/x32-abi-windows/blob/master/x32-abi-windows-tight.cpp)
@@ -69,4 +72,3 @@ High performance power scheme. The tables contain best result out of 6, or so, r
 ## Generated binary analysis
 
 The differences in generated instructions seem marginal. On **short_ptr** side there are less REX prefixes, but more conversion and move instructions. It seems like the optimizer doesn't see perfectly through what I'm trying to accomplish, but I've found no obvious pesimisations either. Although it won't use SSE to zero out the array of the *short* pointers.
-
