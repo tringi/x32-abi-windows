@@ -4,6 +4,14 @@
 
 Let's call it **x86-64X32**
 
+## TL;DR
+
+A pointer-heavy code **can** be 9 % faster if built as 64-bit with 32-bit pointers, instead just simply 32-bit, and if the memory layout allows for better cache utilization and locality due to shorter pointers. The *64X32* program will still use more memory unless special care of allocations isn't taken.
+
+If the data structure doesn't lend itself to improved cache utilization there are little to no gains.
+
+The rule of thumb seems to be: *If the performance of your code is better when compiled as 32-bit than 64-bit, then **64X32** mode can improve it further, otherwise not so much.*
+
 ## Test program
 
 The program checks if its executable was built with **IMAGE_FILE_LARGE_ADDRESS_AWARE** flag. **Iff** the executable is **64-bit** and the flag was intentionally **cleared** (restricting the address space of the process to lowest 2 GBs (lower 31 bits)), then runs the test with **long** type (even on 64-bit Windows **long** type is 32-bit) acting as storage for the pointer (I call it **short_ptr**). Otherwise it runs the same test with native pointer size.
@@ -46,14 +54,6 @@ High performance power scheme. The tables contain best result out of 6, or so, r
 | Tree size | 1524.1 MB | 1439.4 MB | 1439.4 MB |
 | Build time | 2.03 s | 2.12 s | **1.92 s** |
 | **Walk time** | **5.74 s** | **6.38 s** | **5.56 s** |
-
-## TL;DR
-
-A pointer-heavy code **can** be 9 % faster if built as 64-bit with 32-bit pointers, instead just simply 32-bit, and if the memory layout allows for better cache utilization and locality due to shorter pointers. The *64X32* program will still use more memory unless special care of allocations isn't taken.
-
-If the data structure doesn't lend itself to improved cache utilization there are little to no gains.
-
-The rule of thumb seems to be: *If the performance of your code is better when compiled as 32-bit than 64-bit, then **64X32** mode can improve it further, otherwise not so much.*
 
 ## Possible improvements
 
